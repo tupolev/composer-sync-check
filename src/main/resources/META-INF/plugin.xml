@@ -1,0 +1,40 @@
+<idea-plugin>
+    <id>composer-sync-check</id>
+    <name>Composer Sync Check</name>
+    <vendor email="tupolev@gmail.com" url="https://github.com/tupolev/composer-sync-check">Manuel Gómez</vendor>
+
+    <description><![CDATA[
+        Detects when Composer dependencies may be out of sync and prompts to run composer install.
+    ]]></description>
+
+    <depends>com.intellij.modules.platform</depends>
+    <depends>Git4Idea</depends>
+
+    <resource-bundle>messages.ComposerSyncCheckBundle</resource-bundle>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <notificationGroup
+                id="Composer Sync Check"
+                displayType="BALLOON"
+                isLogByDefault="true"/>
+        <toolWindow
+                id="Composer Sync Check"
+                factoryClass="net.kodesoft.composersynccheck.toolwindow.ComposerSyncToolWindowFactory"
+                icon="/META-INF/composerSyncToolWindow.svg"
+                anchor="bottom"/>
+        <projectConfigurable
+                parentId="tools"
+                instance="net.kodesoft.composersynccheck.settings.ComposerSyncCheckConfigurable"
+                displayName="Composer Sync Check"/>
+        <postStartupActivity implementation="net.kodesoft.composersynccheck.services.ComposerSyncStartupActivity"/>
+    </extensions>
+
+    <projectListeners>
+        <listener
+                class="net.kodesoft.composersynccheck.listeners.ComposerFileChangeListener"
+                topic="com.intellij.openapi.vfs.newvfs.BulkFileListener"/>
+        <listener
+                class="net.kodesoft.composersynccheck.listeners.GitRepositoryStateListener"
+                topic="git4idea.repo.GitRepositoryChangeListener"/>
+    </projectListeners>
+</idea-plugin>
