@@ -3,19 +3,12 @@ package net.kodesoft.composersynccheck.execution
 import com.intellij.notification.NotificationGroupManager
 import com.intellij.notification.NotificationType
 import com.intellij.execution.process.ProcessOutputType
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui.MessageType
-import com.intellij.openapi.ui.popup.Balloon
-import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.util.SystemInfo
-import com.intellij.openapi.wm.WindowManager
-import com.intellij.ui.awt.RelativePoint
 import com.intellij.util.concurrency.AppExecutorUtil
 import net.kodesoft.composersynccheck.ComposerSyncCheckBundle
 import net.kodesoft.composersynccheck.toolwindow.ComposerSyncConsoleService
-import java.awt.Color
 import java.io.File
 import java.io.InputStream
 import java.nio.file.Path
@@ -79,28 +72,37 @@ class ComposerCommandRunner(
                 console.appendLine("\n[composer-sync-check] Exit code: $exitCode")
                 logger.info("Composer command finished with exit code $exitCode")
                 if (exitCode == 0) {
-                    showCommandResultBalloon(
-                        success = true,
-                        title = ComposerSyncCheckBundle.message("command.success.title"),
-                        message = ComposerSyncCheckBundle.message("command.success.message"),
-                    )
+                    NotificationGroupManager.getInstance()
+                        .getNotificationGroup("Composer Sync Check")
+                        .createNotification(
+                            ComposerSyncCheckBundle.message("command.success.title"),
+                            ComposerSyncCheckBundle.message("command.success.message"),
+                            NotificationType.INFORMATION,
+                        )
+                        .notify(project)
                     onCompleted(true)
                 } else {
-                    showCommandResultBalloon(
-                        success = false,
-                        title = ComposerSyncCheckBundle.message("command.failure.title"),
-                        message = ComposerSyncCheckBundle.message("command.failure.message", exitCode.toString()),
-                    )
+                    NotificationGroupManager.getInstance()
+                        .getNotificationGroup("Composer Sync Check")
+                        .createNotification(
+                            ComposerSyncCheckBundle.message("command.failure.title"),
+                            ComposerSyncCheckBundle.message("command.failure.message", exitCode.toString()),
+                            NotificationType.ERROR,
+                        )
+                        .notify(project)
                     onCompleted(false)
                 }
             } catch (t: Throwable) {
                 logger.warn("Failed to run composer command", t)
                 console.appendLine("[composer-sync-check] Failed: ${t.message}")
-                showCommandResultBalloon(
-                    success = false,
-                    title = ComposerSyncCheckBundle.message("command.failure.title"),
-                    message = ComposerSyncCheckBundle.message("command.failure.unexpected", t.message ?: "unknown error"),
-                )
+                NotificationGroupManager.getInstance()
+                    .getNotificationGroup("Composer Sync Check")
+                    .createNotification(
+                        ComposerSyncCheckBundle.message("command.failure.title"),
+                        ComposerSyncCheckBundle.message("command.failure.unexpected", t.message ?: "unknown error"),
+                        NotificationType.ERROR,
+                    )
+                    .notify(project)
                 onCompleted(false)
             } finally {
                 running.set(false)
@@ -113,7 +115,7 @@ class ComposerCommandRunner(
         return if (SystemInfo.isWindows) {
             listOf("cmd", "/c", command)
         } else {
-            listOf("/bin/bash", "-lc", command)
+            listOf("/bin/sh", "-lc", command)
         }
     }
 
@@ -125,43 +127,5 @@ class ComposerCommandRunner(
             val text = String(buffer, 0, read)
             console.appendProcessText(text, outputType)
         }
-    }
-
-    private fun showCommandResultBalloon(success: Boolean, title: String, message: String) {
-        ApplicationManager.getApplication().invokeLater {
-            val frameComponent = WindowManager.getInstance().getIdeFrame(project)?.component
-            if (frameComponent == null) {
-                NotificationGroupManager.getInstance()
-                    .getNotificationGroup("Composer Sync Check")
-                    .createNotification(
-                        title,
-                        message,
-                        if (success) NotificationType.INFORMATION else NotificationType.ERROR,
-                    )
-                    .notify(project)
-                return@invokeLater
-            }
-
-            val fillColor = if (success) Color(225, 245, 231) else Color(253, 232, 232)
-            val textColor = if (success) "#1b5e20" else "#7f1d1d"
-            val html = "<b>${escapeHtml(title)}</b><br/>" +
-                "<span style=\"color:$textColor;\">${escapeHtml(message)}</span>"
-
-            JBPopupFactory.getInstance()
-                .createHtmlTextBalloonBuilder(html, MessageType.INFO, null)
-                .setFillColor(fillColor)
-                .setFadeoutTime(6000)
-                .setHideOnClickOutside(true)
-                .setHideOnKeyOutside(true)
-                .createBalloon()
-                .show(RelativePoint.getCenterOf(frameComponent), Balloon.Position.above)
-        }
-    }
-
-    private fun escapeHtml(input: String): String {
-        return input
-            .replace("&", "&amp;")
-            .replace("<", "&lt;")
-            .replace(">", "&gt;")
     }
 }

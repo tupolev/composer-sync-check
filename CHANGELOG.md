@@ -2,6 +2,12 @@
 
 # Composer Sync Check Changelog
 
+## [0.1.4] - 2026-03-09
+
+### Changed
+
+- Internal maintenance release and workflow/settings stabilization updates.
+
 ## [0.1.3] - 2026-03-09
 
 ### Added

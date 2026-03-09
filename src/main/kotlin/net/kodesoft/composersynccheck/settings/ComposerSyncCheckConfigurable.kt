@@ -4,8 +4,10 @@ import com.intellij.openapi.components.service
 import com.intellij.openapi.options.ConfigurationException
 import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.options.SearchableConfigurable
+import com.intellij.openapi.ui.ComponentValidator
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
+import com.intellij.openapi.ui.ValidationInfo
 import com.intellij.ui.TitledSeparator
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBTextField
@@ -16,8 +18,6 @@ import net.kodesoft.composersynccheck.services.ComposerSyncProjectService
 import java.awt.BorderLayout
 import java.awt.GridBagConstraints
 import java.awt.GridBagLayout
-import java.awt.event.FocusAdapter
-import java.awt.event.FocusEvent
 import java.nio.file.Files
 import java.nio.file.Path
 import javax.swing.JButton
@@ -39,14 +39,16 @@ class ComposerSyncCheckConfigurable(private val project: Project) : SearchableCo
     private val fileCheckBox = JBCheckBox()
     private val notificationCheckBox = JBCheckBox()
     private val debugModeCheckBox = JBCheckBox()
-    private var pathValidationListenersInstalled = false
+    private var validatorsInstalled = false
 
     override fun getId(): String = "tools.composer-sync-check"
 
     override fun getDisplayName(): String = ComposerSyncCheckBundle.message("settings.display.name")
 
+    override fun getPreferredFocusedComponent(): JComponent = composerCommandField
+
     override fun createComponent(): JComponent {
-        return JPanel(GridBagLayout()).apply {
+        val panel = JPanel(GridBagLayout()).apply {
             val gc = GridBagConstraints().apply {
                 anchor = GridBagConstraints.WEST
                 fill = GridBagConstraints.HORIZONTAL
@@ -116,6 +118,8 @@ class ComposerSyncCheckConfigurable(private val project: Project) : SearchableCo
             gc.weighty = 1.0
             add(JPanel(), gc)
         }
+        installValidators()
+        return panel
     }
 
     override fun isModified(): Boolean {
@@ -156,12 +160,9 @@ class ComposerSyncCheckConfigurable(private val project: Project) : SearchableCo
         fileCheckBox.isSelected = state.checkOnComposerFilesChange
         notificationCheckBox.isSelected = state.showNotificationBalloon
         debugModeCheckBox.isSelected = state.debugMode
-        updatePathFieldOutline(composerJsonPathField, "composer.json")
-        updatePathFieldOutline(composerLockPathField, "composer.lock")
     }
 
     private fun createPathFieldWithAutoDetectButton(field: JBTextField, onAutoDetect: () -> Unit): JComponent {
-        installPathValidationListeners()
         return JPanel(BorderLayout(com.intellij.util.ui.JBUI.scale(8), 0)).apply {
             add(field, BorderLayout.CENTER)
             add(JButton(ComposerSyncCheckBundle.message("settings.autodetect")).apply { addActionListener { onAutoDetect() } }, BorderLayout.EAST)
@@ -195,12 +196,10 @@ class ComposerSyncCheckConfigurable(private val project: Project) : SearchableCo
                 ComposerSyncCheckBundle.message("settings.error.autodetect.not.found", fileName),
                 ComposerSyncCheckBundle.message("settings.display.name")
             )
-            updatePathFieldOutline(field, fileName)
             return
         }
 
         field.text = toConfigPath(projectRoot, detectedPath)
-        updatePathFieldOutline(field, fileName)
     }
 
     private fun validate() {
@@ -264,25 +263,30 @@ class ComposerSyncCheckConfigurable(private val project: Project) : SearchableCo
         }
     }
 
-    private fun installPathValidationListeners() {
-        if (pathValidationListenersInstalled) return
-        composerJsonPathField.addFocusListener(object : FocusAdapter() {
-            override fun focusLost(e: FocusEvent?) {
-                updatePathFieldOutline(composerJsonPathField, "composer.json")
+    private fun installValidators() {
+        if (validatorsInstalled) return
+        ComponentValidator(project)
+            .withValidator {
+                val text = composerJsonPathField.text.trim()
+                if (!isPathValid(text, "composer.json")) {
+                    ValidationInfo("composer.json file not found", composerJsonPathField)
+                } else {
+                    null
+                }
             }
-        })
-        composerLockPathField.addFocusListener(object : FocusAdapter() {
-            override fun focusLost(e: FocusEvent?) {
-                updatePathFieldOutline(composerLockPathField, "composer.lock")
-            }
-        })
-        pathValidationListenersInstalled = true
-    }
+            .installOn(composerJsonPathField)
 
-    private fun updatePathFieldOutline(field: JBTextField, expectedFileName: String) {
-        val isValid = isPathValid(field.text.trim(), expectedFileName)
-        field.putClientProperty("JComponent.outline", if (isValid) "success" else "error")
-        field.repaint()
+        ComponentValidator(project)
+            .withValidator {
+                val text = composerLockPathField.text.trim()
+                if (!isPathValid(text, "composer.lock")) {
+                    ValidationInfo("composer.lock file not found", composerLockPathField)
+                } else {
+                    null
+                }
+            }
+            .installOn(composerLockPathField)
+        validatorsInstalled = true
     }
 
     private fun isPathValid(configuredPath: String, expectedFileName: String): Boolean {
