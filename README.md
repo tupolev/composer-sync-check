@@ -2,7 +2,8 @@
 
 IntelliJ Platform plugin that detects when Composer dependencies may be out of sync and prompts you to run `composer install`. Tested primarily in PhpStorm.
 
-<!-- Plugin description -->
+[![Build](https://github.com/tupolev/composer-sync-check/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/tupolev/composer-sync-check/actions/workflows/build.yml)
+
 **Composer Sync Check** is an IntelliJ Platform plugin (tested in PhpStorm) that detects when your Composer dependencies may be out of sync with the current project state and suggests running `composer install`.
 
 It supports:

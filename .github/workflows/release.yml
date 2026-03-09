@@ -31,6 +31,35 @@ jobs:
         with:
           ref: ${{ github.event.release.tag_name }}
 
+      # Ensure release tag version matches pluginVersion in gradle.properties
+      - name: Verify tag matches pluginVersion
+        run: |
+          TAG="${GITHUB_REF#refs/tags/}"
+          VERSION=$(grep "^pluginVersion" gradle.properties | cut -d'=' -f2 | tr -d '[:space:]')
+
+          # remove leading v if present
+          TAG_VERSION=${TAG#v}
+
+          echo "Tag version: $TAG_VERSION"
+          echo "Plugin version: $VERSION"
+
+          if [ "$TAG_VERSION" != "$VERSION" ]; then
+            echo "ERROR: Git tag version does not match pluginVersion in gradle.properties"
+            exit 1
+          fi
+
+      # Ensure pluginVersion follows SemVer (x.y.z)
+      - name: Validate pluginVersion follows SemVer
+        run: |
+          VERSION=$(grep "^pluginVersion" gradle.properties | cut -d'=' -f2 | tr -d '[:space:]')
+
+          echo "Detected plugin version: $VERSION"
+
+          if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "ERROR: pluginVersion must follow SemVer format (x.y.z)"
+            exit 1
+          fi
+
       # Set up the Java environment for the next steps
       - name: Setup Java
         uses: actions/setup-java@v5
@@ -44,6 +73,18 @@ jobs:
         with:
           cache-read-only: true
 
+      # Build plugin ZIP artifact
+      - name: Build Plugin
+        run: ./gradlew buildPlugin
+
+      # Attach plugin ZIP to the current GitHub Release
+      - name: Upload plugin ZIP to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: build/distributions/*.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       # Update the Unreleased section with the current release note
       - name: Patch Changelog
         if: ${{ github.event.release.body != '' }}
@@ -56,20 +97,19 @@ jobs:
 
           ./gradlew patchChangelog --release-note-file=$RELEASE_NOTE
 
-      # Publish the plugin to JetBrains Marketplace
-      - name: Publish Plugin
+      # Marketplace publishing is currently disabled for this project
+      - name: Marketplace publishing disabled
+        run: echo "JetBrains Marketplace publishing is currently disabled for this project."
+
+      # Publish the plugin to JetBrains Marketplace (disabled)
+      - name: Publish plugin to JetBrains Marketplace (disabled)
+        if: false
         env:
           PUBLISH_TOKEN: ${{ secrets.PUBLISH_TOKEN }}
           CERTIFICATE_CHAIN: ${{ secrets.CERTIFICATE_CHAIN }}
           PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
           PRIVATE_KEY_PASSWORD: ${{ secrets.PRIVATE_KEY_PASSWORD }}
         run: ./gradlew publishPlugin
-
-      # Upload an artifact as a release asset
-      - name: Upload Release Asset
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh release upload ${{ github.event.release.tag_name }} ./build/distributions/*
 
       # Create a pull request
       - name: Create Pull Request
