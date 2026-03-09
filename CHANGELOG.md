@@ -2,6 +2,8 @@
 
 # Composer Sync Check Changelog
 
+## [Unreleased]
+
 ## [0.1.4] - 2026-03-09
 
 ### Changed
@@ -59,3 +61,8 @@
   - `Ignore for this session`
 - Configurable command execution and composer file path configuration.
 - Localization support for English, German, and Spanish.
+
+[Unreleased]: https://github.com/tupolev/composer-sync-check/compare/0.1.4...HEAD
+[0.1.4]: https://github.com/tupolev/composer-sync-check/compare/0.1.3...0.1.4
+[0.1.3]: https://github.com/tupolev/composer-sync-check/compare/0.1.0...0.1.3
+[0.1.0]: https://github.com/tupolev/composer-sync-check/commits/0.1.0
