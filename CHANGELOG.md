@@ -2,6 +2,39 @@
 
 # Composer Sync Check Changelog
 
+## [0.1.3] - 2026-03-09
+
+### Added
+
+- Manual `Run composer install now` action in the `Composer Sync Check` tool window.
+- Header status indicator (traffic-light style):
+  - green = in sync
+  - yellow = composer command running
+  - red = out of sync or last composer run failed
+- Tool window settings shortcut button (gear) to open plugin settings directly.
+- Console-style tool window output with:
+  - ANSI color/format rendering
+  - black background and monospace text
+  - context menu actions (cut/copy/paste/select all/search selection in Google)
+- Command lifecycle UX:
+  - run button disables while command is running and re-enables afterward
+  - success/failure balloons for composer command results
+  - soft green success balloon and soft red failure balloon styles
+- Settings improvements:
+  - debug mode option
+  - checkbox option grouping with section separator
+  - helper description text below checkboxes
+  - path field red/green outline validation on blur and autodetect
+- Tool window custom icon.
+- `docs/index.md` page for GitHub Pages.
+
+### Changed
+
+- Release workflow now uploads plugin ZIP assets to GitHub Releases.
+- Release workflow validates tag/version consistency and SemVer format.
+- JetBrains Marketplace publishing is temporarily disabled in release workflow (kept ready for re-enable).
+- Removed Qodana from Gradle and CI workflow.
+
 ## [0.1.0] - 2026-03-09
 
 ### Added
@@ -18,22 +51,5 @@
 - Actionable mismatch notification with:
   - `Run composer install`
   - `Ignore for this session`
-- Fully configurable command execution:
-  - custom composer command string
-  - support for wrappers, Docker-based commands, and env-driven commands
-  - configurable `composer.json` and `composer.lock` paths (relative or absolute)
-  - autodetect actions for both composer files in settings
-- Dedicated `Composer Sync Check` tool window:
-  - manual `Run composer install now` action
-  - status indicator (in sync / out of sync / running)
-  - settings shortcut button
-  - console-style output with ANSI color/format support
-  - stdout/stderr streaming and command lifecycle logs
-- Command result feedback:
-  - success/failure balloon notifications
-  - soft green success balloon and soft red failure balloon styles
-- Settings UX improvements:
-  - sectioned checkbox group with helper descriptions
-  - path field validation outlines (green/red) on blur and autodetect
-  - debug mode option for detailed check logging in the tool window
+- Configurable command execution and composer file path configuration.
 - Localization support for English, German, and Spanish.
