@@ -2,6 +2,23 @@
 
 # Composer Sync Check Changelog
 
+## [0.1.5] - 2026-03-10
+
+### Added
+
+- Settings page action to test the out-of-sync notification balloon.
+- Tool window action `Check composer status now` (loupe icon) for manual on-demand sync checks.
+
+### Changed
+
+- Out-of-sync notifications now use the plugin tool window icon.
+- Tool window header now shows only status/actions (plugin title removed from header row).
+- Notification behavior refined:
+  - manual status checks and settings test notifications are always shown when notifications are enabled
+  - periodic out-of-sync notifications are shown for the first two occurrences per IDE session and skipped from the third onward
+- Documentation updates (`README.md`, `docs/index.md`, `docs/configuration.md`, `AGENTS.md`).
+- Added notification policy unit tests.
+
 ## [0.1.4] - 2026-03-09
 
 ### Changed

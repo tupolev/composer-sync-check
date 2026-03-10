@@ -11,6 +11,7 @@ It supports:
 - checks on `composer.json` / `composer.lock` changes
 - checks on Git repository state changes
 - periodic background checks
+- manual on-demand status checks from the tool window
 - configurable composer command execution (including Docker-based commands)
 - localized UI messages (English, German, Spanish)
 <!-- Plugin description end -->
@@ -24,13 +25,19 @@ It supports:
 - Notifications with actions:
   - Run `composer install`
   - Ignore for this session
+- Notification behavior:
+  - manual status checks and settings test notifications are always shown when notifications are enabled
+  - periodic out-of-sync notifications are shown for the first two occurrences per IDE session, then suppressed for that session
 - Settings under `Settings -> Tools -> Composer Sync Check`:
   - Composer command (supports Docker/wrappers/env vars)
   - Check interval (minutes)
   - Check on Git branch change
   - Check on `composer.json`/`composer.lock` changes
   - Enable/disable warning notifications
-- Dedicated `Composer Sync Check` tool window showing command output.
+  - Test notification balloon button
+- Dedicated `Composer Sync Check` tool window showing command output with:
+  - `Check composer status now` action
+  - `Run composer install now` action
 
 ## Build
 
@@ -46,9 +53,3 @@ Plugin ZIP is generated in `build/distributions`.
 2. Go to `Settings -> Plugins`.
 3. Click the gear icon and choose `Install Plugin from Disk...`.
 4. Select the ZIP from `build/distributions`.
-
-## Development Notes
-
-- Plugin ID: `composer-sync-check`
-- Minimum build: `252`
-- Bundled dependency: `Git4Idea`

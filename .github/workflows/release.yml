@@ -31,20 +31,23 @@ jobs:
         with:
           ref: ${{ github.event.release.tag_name }}
 
-      # Ensure release tag version matches pluginVersion in gradle.properties
-      - name: Verify tag matches pluginVersion
+      # Ensure release tag matches v-prefixed pluginVersion in gradle.properties
+      - name: Verify tag matches v-prefixed pluginVersion
         run: |
           TAG="${GITHUB_REF#refs/tags/}"
           VERSION=$(grep "^pluginVersion" gradle.properties | cut -d'=' -f2 | tr -d '[:space:]')
+          EXPECTED_TAG="v$VERSION"
 
-          # remove leading v if present
-          TAG_VERSION=${TAG#v}
-
-          echo "Tag version: $TAG_VERSION"
+          echo "Tag: $TAG"
           echo "Plugin version: $VERSION"
 
-          if [ "$TAG_VERSION" != "$VERSION" ]; then
-            echo "ERROR: Git tag version does not match pluginVersion in gradle.properties"
+          if [[ ! "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "ERROR: Git tag must follow v-prefixed SemVer format (vX.Y.Z)"
+            exit 1
+          fi
+
+          if [ "$TAG" != "$EXPECTED_TAG" ]; then
+            echo "ERROR: Git tag must match pluginVersion in gradle.properties (expected $EXPECTED_TAG)"
             exit 1
           fi
 

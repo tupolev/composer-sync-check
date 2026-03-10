@@ -50,6 +50,7 @@ class ComposerSyncConsoleService(private val project: Project) : Disposable {
     private val textPane = NoWrapTextPane()
     private val ansiDecoder = AnsiEscapeDecoder()
     private val statusIconLabel = JBLabel("\u25CF")
+    private lateinit var checkStatusButton: JButton
     private lateinit var runInstallButton: JButton
 
     init {
@@ -67,9 +68,16 @@ class ComposerSyncConsoleService(private val project: Project) : Disposable {
     fun createContent(): JPanel = JPanel(BorderLayout()).apply {
         add(
             JPanel(FlowLayout(FlowLayout.LEFT, JBUI.scale(8), JBUI.scale(8))).apply {
-                add(JBLabel(ComposerSyncCheckBundle.message("run.window.title")))
                 add(JBLabel(ComposerSyncCheckBundle.message("run.status.label")))
                 add(statusIconLabel)
+                add(
+                    JButton(ComposerSyncCheckBundle.message("run.button.check.status"), AllIcons.Actions.Find).apply {
+                        checkStatusButton = this
+                        addActionListener {
+                            project.service<ComposerSyncProjectService>().runSyncStatusCheckFromToolWindow()
+                        }
+                    },
+                )
                 add(
                     JButton(ComposerSyncCheckBundle.message("run.button.manual.install"), AllIcons.Actions.Execute).apply {
                         runInstallButton = this
@@ -96,6 +104,7 @@ class ComposerSyncConsoleService(private val project: Project) : Disposable {
             },
             BorderLayout.CENTER
         )
+        project.service<ComposerSyncProjectService>().syncActionButtonsStateToUi()
     }
 
     fun show() {
@@ -144,6 +153,14 @@ class ComposerSyncConsoleService(private val project: Project) : Disposable {
         com.intellij.openapi.application.ApplicationManager.getApplication().invokeLater {
             if (::runInstallButton.isInitialized) {
                 runInstallButton.isEnabled = enabled
+            }
+        }
+    }
+
+    fun setCheckStatusEnabled(enabled: Boolean) {
+        com.intellij.openapi.application.ApplicationManager.getApplication().invokeLater {
+            if (::checkStatusButton.isInitialized) {
+                checkStatusButton.isEnabled = enabled
             }
         }
     }

@@ -14,6 +14,7 @@ Composer Sync Check is an IntelliJ Platform plugin (primarily for PhpStorm) that
 ## Main User Surfaces
 - Settings page: `Settings -> Tools -> Composer Sync Check`
 - Tool window: `Composer Sync Check`
+  - Manual check button for sync status (`Check composer status now`)
   - Manual run button for `composer install`
   - Status indicator (green/yellow/red)
   - Console-style output panel with ANSI rendering
@@ -45,6 +46,10 @@ Composer Sync Check is an IntelliJ Platform plugin (primarily for PhpStorm) that
 
 ## Notes for Contributors/Agents
 - Keep behavior consistent across notification-triggered and manual composer runs.
+- Notification policy:
+  - Manual status checks and settings test notifications must not be filtered by deduplication or "ignore for session".
+  - Periodic out-of-sync notifications are shown only for the first two occurrences per IDE session.
+  - Global notifications toggle remains the only way to fully disable notifications.
 - Preserve localization by adding message keys in EN/DE/ES bundles together.
 - Validate IntelliJ UI changes by running `buildPlugin`.
 - If version changes, keep `gradle.properties` and `CHANGELOG.md` aligned.

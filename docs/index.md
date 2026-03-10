@@ -1,57 +1,70 @@
 # Composer Sync Check
 
-Composer Sync Check is an IntelliJ Platform plugin (tested primarily in PhpStorm) that detects when Composer dependencies may be out of sync with your current project state and helps you run `composer install` quickly.
+Composer Sync Check is an IntelliJ Platform plugin (primarily for PhpStorm) that detects when your Composer dependencies may be out of sync with the current project state and helps you run `composer install` quickly.
 
-## What It Does
+## Status
+[![Build](https://github.com/tupolev/composer-sync-check/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/tupolev/composer-sync-check/actions/workflows/build.yml)
 
-- Detects potential dependency mismatches using `composer.lock`, `vendor/composer/installed.json`, and `vendor/` fallback checks.
-- Triggers checks on:
+
+## Main Use Case
+
+Use this plugin when you switch branches, pull lock-file changes, or edit `composer.json` and want a fast warning that dependencies should be reinstalled.
+
+The plugin checks common drift scenarios and provides direct actions to run your configured Composer command.
+
+## Main Features
+
+- Detects mismatches using `composer.lock`, `vendor/composer/installed.json`, and `vendor/` fallback checks.
+- Runs checks on:
   - `composer.json` / `composer.lock` changes
   - Git repository state changes
   - periodic background intervals
-- Shows actionable notifications when mismatches are detected.
-- Runs configurable Composer commands (including wrappers and Docker-based commands).
+  - manual on-demand checks from the tool window
+- Shows actionable notifications when out-of-sync is detected.
+- Provides a dedicated tool window with status indicator, on-demand check/install actions, and ANSI-rendered command output.
+- Supports custom Composer commands (including wrappers and Docker-based commands).
+- Localized UI (English, German, Spanish).
 
-## Tool Window
+## Download
 
-The **Composer Sync Check** tool window provides:
+- GitHub repository: <https://github.com/tupolev/composer-sync-check>
+- Release builds: <https://github.com/tupolev/composer-sync-check/releases>
 
-- manual **Run composer install now** action
-- sync status indicator (green/yellow/red)
-- settings shortcut button
-- console-like output with ANSI color/format support
-- command stdout/stderr streaming and logs
+If you build locally, the plugin ZIP is generated under `build/distributions/`.
 
-## Settings
+## Clone and Setup
 
-Available under:
+Prerequisites:
+- JDK 21
+- Gradle wrapper (included)
+- PhpStorm or IntelliJ IDEA compatible with build `252+`
 
-`Settings -> Tools -> Composer Sync Check`
-
-Configuration includes:
-
-- Composer command
-- `composer.json` path
-- `composer.lock` path
-- check interval (minutes)
-- Git change checks
-- Composer file change checks
-- notifications toggle
-- debug mode
-
-Path fields support autodetection and validation.
-
-## Installation
-
-Build plugin ZIP:
+Clone:
 
 ```bash
-./gradlew buildPlugin
+git clone https://github.com/tupolev/composer-sync-check.git
+cd composer-sync-check
 ```
 
-Install in IDE:
+Build and test:
 
-1. Open your IDE settings
-2. Go to `Plugins`
-3. Use `Install Plugin from Disk...`
-4. Select ZIP from `build/distributions`
+```bash
+./gradlew test buildPlugin
+```
+
+Run in a sandbox IDE for development:
+
+```bash
+./gradlew runIde
+```
+
+Install built ZIP manually:
+
+1. Open IDE settings.
+2. Go to `Plugins`.
+3. Select `Install Plugin from Disk...`.
+4. Choose the ZIP from `build/distributions/`.
+
+## Configuration
+
+Plugin configuration details are documented in [Configuration](configuration.md).

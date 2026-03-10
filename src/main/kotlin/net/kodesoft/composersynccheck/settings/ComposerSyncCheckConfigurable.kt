@@ -38,6 +38,7 @@ class ComposerSyncCheckConfigurable(private val project: Project) : SearchableCo
     private val gitCheckBox = JBCheckBox()
     private val fileCheckBox = JBCheckBox()
     private val notificationCheckBox = JBCheckBox()
+    private val testNotificationButton = JButton()
     private val debugModeCheckBox = JBCheckBox()
     private var validatorsInstalled = false
 
@@ -107,6 +108,12 @@ class ComposerSyncCheckConfigurable(private val project: Project) : SearchableCo
             add(notificationCheckBox, gc)
             gc.gridy++
             addDescriptionLabel(this, ComposerSyncCheckBundle.message("settings.desc.notifications"), gc)
+            gc.gridy++
+            testNotificationButton.text = ComposerSyncCheckBundle.message("settings.button.test.notification")
+            testNotificationButton.addActionListener {
+                project.service<ComposerSyncProjectService>().showOutOfSyncNotificationForTesting()
+            }
+            add(JPanel(BorderLayout()).apply { add(testNotificationButton, BorderLayout.WEST) }, gc)
 
             gc.gridy++
             debugModeCheckBox.text = ComposerSyncCheckBundle.message("settings.debug.mode")
