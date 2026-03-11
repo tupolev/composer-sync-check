@@ -4,6 +4,8 @@ Composer Sync Check settings are available at:
 
 `Settings -> Tools -> Composer Sync Check`
 
+![Configuration window](screenshots/configuration-window.png)
+
 ## Settings Fields
 
 ## Composer command
@@ -58,6 +60,8 @@ Notification behavior when enabled:
 ## Tool Window Controls
 
 The `Composer Sync Check` tool window provides:
+
+![Tool window](screenshots/tool-window.png)
 
 - `Check composer status now`
   - Runs an immediate sync check.

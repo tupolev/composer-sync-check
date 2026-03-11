@@ -47,9 +47,20 @@ It supports:
 
 Plugin ZIP is generated in `build/distributions`.
 
+## Install in PhpStorm
+
+Install from the JetBrains Marketplace:
+
+- <https://plugins.jetbrains.com/plugin/30616-composer-sync-check>
+
 ## Local Installation
 
 1. Open IntelliJ IDEA or PhpStorm.
 2. Go to `Settings -> Plugins`.
 3. Click the gear icon and choose `Install Plugin from Disk...`.
 4. Select the ZIP from `build/distributions`.
+
+## Support
+
+- Report issues: <https://github.com/tupolev/composer-sync-check/issues>
+- **Support the developer** <a href="https://ko-fi.com/O5O51FHM"><img src="https://storage.ko-fi.com/cdn/kofi6.png?v=6" alt="Buy me a coffee at ko-fi.com" width="180" /></a>

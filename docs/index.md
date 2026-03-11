@@ -32,6 +32,12 @@ The plugin checks common drift scenarios and provides direct actions to run your
 
 If you build locally, the plugin ZIP is generated under `build/distributions/`.
 
+## Install in PhpStorm
+
+Install from the JetBrains Marketplace:
+
+- <https://plugins.jetbrains.com/plugin/30616-composer-sync-check>
+
 ## Clone and Setup
 
 Prerequisites:
@@ -68,3 +74,8 @@ Install built ZIP manually:
 ## Configuration
 
 Plugin configuration details are documented in [Configuration](configuration.md).
+
+## Support
+
+- Report issues: <https://github.com/tupolev/composer-sync-check/issues>
+- **Support the developer** <a href="https://ko-fi.com/O5O51FHM"><img src="https://storage.ko-fi.com/cdn/kofi6.png?v=6" alt="Buy me a coffee at ko-fi.com" width="180" /></a>

@@ -3,6 +3,9 @@
 ## Project Summary
 Composer Sync Check is an IntelliJ Platform plugin (primarily for PhpStorm) that detects when PHP Composer dependencies may be out of sync and helps the user run `composer install`.
 
+## Install in PhpStorm
+- JetBrains Marketplace: <https://plugins.jetbrains.com/plugin/30616-composer-sync-check>
+
 ## Core Behavior
 - Detects potential mismatch between project state and installed dependencies.
 - Watches `composer.json` / `composer.lock` changes.
